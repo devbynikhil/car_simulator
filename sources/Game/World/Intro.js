@@ -137,13 +137,9 @@ export class Intro {
       // Load, set and save texture
       let cachedTexture = this.text.textures.get(name);
       if (!cachedTexture) {
-        const loader = this.game.resourcesLoader.getLoader("textureKtx");
-
-        const resourcePath = `intro/${name}Label.ktx`;
-        loader.load(resourcePath, (loadedTexture) => {
+        const applyTexture = (loadedTexture) => {
           this.text.textures.set(name, loadedTexture);
 
-          // Update material and mesh
           material.outputNode = Fn(() => {
             texture(loadedTexture, vec2(uv().x, uv().y.oneMinus()))
               .r.lessThan(0.5)
@@ -152,7 +148,39 @@ export class Intro {
           })();
           material.needsUpdate = true;
           mesh.visible = true;
-        });
+        };
+
+        const ktxLoader = this.game.resourcesLoader.getLoader("textureKtx");
+        const textureLoader = this.game.resourcesLoader.getLoader("texture");
+
+        const ktxPath = `intro/${name}Label.ktx`;
+        const pngPath = `intro/${name}Label.png`;
+
+        ktxLoader.load(
+          ktxPath,
+          (loadedTexture) => {
+            applyTexture(loadedTexture);
+          },
+          undefined,
+          () => {
+            textureLoader.load(
+              pngPath,
+              (loadedTexture) => {
+                loadedTexture.colorSpace = THREE.SRGBColorSpace;
+                loadedTexture.minFilter = THREE.NearestFilter;
+                loadedTexture.magFilter = THREE.NearestFilter;
+                loadedTexture.generateMipmaps = false;
+                applyTexture(loadedTexture);
+              },
+              undefined,
+              () => {
+                console.warn(
+                  `Intro: failed to load label texture for '${name}'`,
+                );
+              },
+            );
+          },
+        );
       } else {
         // Update material and mesh
         material.outputNode = Fn(() => {

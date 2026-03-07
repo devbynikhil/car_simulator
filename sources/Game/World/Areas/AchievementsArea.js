@@ -41,15 +41,27 @@ export class AchievementsArea extends Area {
     this.setAchievement();
   }
 
+  getReference(name) {
+    const reference = this.references.items.get(name)?.[0];
+
+    if (!reference)
+      console.warn(`AchievementsArea: missing '${name}' reference`);
+
+    return reference;
+  }
+
   setSounds() {
     this.sounds = {};
+
+    const pillar = this.getReference("pillar");
+    if (!pillar) return;
 
     this.sounds.chimers = this.game.audio.register({
       path: "sounds/magic/Mountain Audio - Small Chimes - Loop.mp3",
       autoplay: true,
       loop: true,
       volume: 0.15,
-      positions: this.references.items.get("pillar")[0].position,
+      positions: pillar.position,
       distanceFade: 20,
     });
   }
@@ -107,7 +119,8 @@ export class AchievementsArea extends Area {
         hasWater: false,
         hasReveal: false,
       });
-      const mesh = this.references.items.get("waterfallStill")[0];
+      const mesh = this.getReference("waterfallStill");
+      if (!mesh) return;
       // mesh.visible = false
       mesh.material = material;
     }
@@ -142,14 +155,17 @@ export class AchievementsArea extends Area {
         hasWater: false,
         hasReveal: false,
       });
-      const mesh = this.references.items.get("waterfallDrop")[0];
+      const mesh = this.getReference("waterfallDrop");
+      if (!mesh) return;
       // mesh.visible = false
       mesh.material = material;
     }
 
     // Particles
     {
-      const reference = this.references.items.get("waterfallParticles")[0];
+      const reference = this.getReference("waterfallParticles");
+      if (!reference?.geometry?.attributes?.position?.array) return;
+
       reference.removeFromParent();
 
       const origin = new THREE.Vector3(
@@ -230,7 +246,8 @@ export class AchievementsArea extends Area {
   }
 
   setPillar() {
-    this.pillar = this.references.items.get("pillar")[0];
+    this.pillar = this.getReference("pillar");
+    if (!this.pillar) return;
 
     // Glyphs
     {
@@ -323,8 +340,11 @@ export class AchievementsArea extends Area {
   }
 
   setInteractivePoint() {
+    const interactivePoint = this.getReference("interactivePoint");
+    if (!interactivePoint) return;
+
     this.interactivePoint = this.game.interactivePoints.create(
-      this.references.items.get("interactivePoint")[0].position,
+      interactivePoint.position,
       "Achievements",
       InteractivePoints.ALIGN_RIGHT,
       InteractivePoints.STATE_CONCEALED,
@@ -355,7 +375,9 @@ export class AchievementsArea extends Area {
     });
 
     // Behind waterfall
-    const zoneReference = this.references.items.get("waterfallZone")[0];
+    const zoneReference = this.getReference("waterfallZone");
+    if (!zoneReference) return;
+
     const position = zoneReference.position.clone();
     const radius = zoneReference.scale.x;
     const zone = this.game.zones.create("cylinder", position, radius);
@@ -366,6 +388,8 @@ export class AchievementsArea extends Area {
   }
 
   update() {
+    if (!this.pillar) return;
+
     this.pillar.position.y =
       Math.sin(this.game.ticker.elapsedScaled * 0.1) * 0.25;
   }

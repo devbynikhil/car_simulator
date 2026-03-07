@@ -37,7 +37,13 @@ export class Areas {
 
     for (const child of model) {
       for (const [name, AreaClass] of list) {
-        if (child.name.startsWith(name)) this[name] = new AreaClass(child);
+        if (!child.name.startsWith(name)) continue;
+
+        try {
+          this[name] = new AreaClass(child);
+        } catch (error) {
+          console.warn(`Areas: failed to init '${name}' area`, error);
+        }
       }
     }
 

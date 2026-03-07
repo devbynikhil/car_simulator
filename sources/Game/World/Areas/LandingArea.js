@@ -37,8 +37,17 @@ export class LandingArea extends Area {
   setLetters() {
     const references = this.references.items.get("letters");
 
+    // Letters are authored in the areas GLB and can be renamed/removed in Blender.
+    // Guard to avoid crashing the whole world when that happens.
+    if (!Array.isArray(references) || references.length === 0) {
+      console.warn("LandingArea: missing 'letters' references in areas model");
+      return;
+    }
+
     for (const reference of references) {
-      const physical = reference.userData.object.physical;
+      const physical = reference?.userData?.object?.physical;
+      if (!physical || !physical.colliders || !physical.colliders[0]) continue;
+
       physical.colliders[0].setActiveEvents(
         this.game.RAPIER.ActiveEvents.CONTACT_FORCE_EVENTS,
       );

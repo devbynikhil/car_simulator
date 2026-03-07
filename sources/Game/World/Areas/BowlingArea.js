@@ -49,6 +49,14 @@ export class BowlingArea extends Area {
     this.setAchievement();
   }
 
+  getReference(name) {
+    const reference = this.references.items.get(name)?.[0];
+
+    if (!reference) console.warn(`BowlingArea: missing '${name}' reference`);
+
+    return reference;
+  }
+
   setSounds() {
     this.sounds = {};
 
@@ -76,8 +84,13 @@ export class BowlingArea extends Area {
       positions: new THREE.Vector3(),
       distanceFade: 25,
       onPlaying: (item) => {
+        if (!this.ball?.position) {
+          item.volume = 0;
+          return;
+        }
+
         item.positions[0].copy(this.ball.position);
-        item.volume = remapClamp(this.ball.speed, 0, 5, 0, 0.6);
+        item.volume = remapClamp(this.ball.speed || 0, 0, 5, 0, 0.6);
       },
     });
   }
@@ -89,12 +102,23 @@ export class BowlingArea extends Area {
     this.pins.boundingUpdateTime = 0;
 
     // References
+    const pinPositionsReference = this.getReference("pinPositions");
+    const basePin = this.getReference("pinPhysicalDynamic");
+
+    if (!pinPositionsReference || !basePin) {
+      this.pins.instancedGroup = {
+        needsUpdate: false,
+        updateBoundings: () => {},
+      };
+      this.pins.reset = () => {};
+      return;
+    }
+
     const references = InstancedGroup.getReferencesFromChildren(
-      this.references.items.get("pinPositions")[0].children,
+      pinPositionsReference.children,
     );
 
     // Instances
-    const basePin = this.references.items.get("pinPhysicalDynamic")[0];
     basePin.castShadow = true;
     basePin.receiveShadow = true;
     basePin.position.set(0, 0, 0);
@@ -182,17 +206,15 @@ export class BowlingArea extends Area {
   }
 
   setBall() {
-    const baseBall = this.references.items.get("ball")[0];
-
     this.ball = {};
     this.ball.isSleeping = true;
-    this.ball.body = baseBall.userData.object.physical.body;
-    this.ball.basePosition = baseBall.position.clone();
-    this.ball.position = new THREE.Vector3().copy(this.ball.body.translation());
+    this.ball.body = null;
+    this.ball.basePosition = new THREE.Vector3();
+    this.ball.position = new THREE.Vector3();
     this.ball.speed = 0;
-    // this.ball.basePosition.y += 1
-
     this.ball.reset = () => {
+      if (!this.ball.body) return;
+
       this.ball.body.setTranslation(this.ball.basePosition);
       this.ball.body.resetForces();
       this.ball.body.resetTorques();
@@ -203,6 +225,18 @@ export class BowlingArea extends Area {
         this.ball.body.sleep();
       });
     };
+
+    const baseBall = this.references.items.get("ball")?.[0];
+    const body = baseBall?.userData?.object?.physical?.body;
+
+    if (!baseBall || !body) {
+      console.warn("BowlingArea: missing 'ball' reference or physics body");
+      return;
+    }
+
+    this.ball.body = body;
+    this.ball.basePosition.copy(baseBall.position);
+    this.ball.position.copy(this.ball.body.translation());
   }
 
   restart() {
@@ -224,8 +258,19 @@ export class BowlingArea extends Area {
   }
 
   setRestart() {
+    const restartReference = this.getReference("restartInteractivePoint");
+
+    if (!restartReference) {
+      this.restartInteractivePoint = {
+        state: InteractivePoints.STATE_HIDDEN,
+        hide: () => {},
+        show: () => {},
+      };
+      return;
+    }
+
     this.restartInteractivePoint = this.game.interactivePoints.create(
-      this.references.items.get("restartInteractivePoint")[0].position,
+      restartReference.position,
       "Restart",
       InteractivePoints.ALIGN_RIGHT,
       InteractivePoints.STATE_HIDDEN,
@@ -245,14 +290,29 @@ export class BowlingArea extends Area {
   }
 
   setScreen() {
+    const screenGroup = this.getReference("screen");
+    const discsMesh = this.getReference("discs");
+    const crossesMesh = this.getReference("crosses");
+
+    if (!screenGroup || !discsMesh || !crossesMesh) {
+      this.screen = {
+        x: 0,
+        min: 0,
+        max: 0,
+        reset: () => {},
+        labelStrike: { visible: false },
+      };
+      return;
+    }
+
     this.screen = {};
-    this.screen.group = this.references.items.get("screen")[0];
+    this.screen.group = screenGroup;
     this.screen.object = this.screen.group.userData.object;
     this.screen.x = this.screen.group.position.x;
     this.screen.max = this.screen.group.position.x;
     this.screen.min = this.screen.max - (28.2 - 3.81);
-    this.screen.discsMesh = this.references.items.get("discs")[0];
-    this.screen.crossesMesh = this.references.items.get("crosses")[0];
+    this.screen.discsMesh = discsMesh;
+    this.screen.crossesMesh = crossesMesh;
 
     const data = new Uint8Array(10);
     this.dataTexture = new THREE.DataTexture(
@@ -300,7 +360,12 @@ export class BowlingArea extends Area {
     this.screen.crossesMesh.material = crossesMaterial;
 
     // Strike label
-    this.screen.labelStrike = this.references.items.get("labelStrike")[0];
+    this.screen.labelStrike = this.getReference("labelStrike");
+
+    if (!this.screen.labelStrike) {
+      this.screen.reset = () => {};
+      return;
+    }
 
     {
       const material = new THREE.MeshBasicNodeMaterial();
@@ -353,8 +418,13 @@ export class BowlingArea extends Area {
   }
 
   setBumpers() {
+    const bumpersMesh = this.getReference("bumpers");
+    const bumpersInteractivePoint = this.getReference("bumpersInteractivePoint");
+
+    if (!bumpersMesh || !bumpersInteractivePoint) return;
+
     this.bumpers = {};
-    this.bumpers.mesh = this.references.items.get("bumpers")[0];
+    this.bumpers.mesh = bumpersMesh;
     this.bumpers.object = this.bumpers.mesh.userData.object;
     this.bumpers.progress = 0;
     this.bumpers.active = false;
@@ -390,7 +460,7 @@ export class BowlingArea extends Area {
 
     // Interactive point
     this.game.interactivePoints.create(
-      this.references.items.get("bumpersInteractivePoint")[0].position,
+      bumpersInteractivePoint.position,
       "Bumpers",
       InteractivePoints.ALIGN_LEFT,
       InteractivePoints.STATE_CONCEALED,
@@ -410,6 +480,11 @@ export class BowlingArea extends Area {
   }
 
   setJukebox() {
+    const jukebox = this.getReference("jukebox");
+    const jukeboxInteractivePoint = this.getReference("jukeboxInteractivePoint");
+
+    if (!jukebox || !jukeboxInteractivePoint) return;
+
     const count = 8;
 
     // Notes > Base position
@@ -484,11 +559,11 @@ export class BowlingArea extends Area {
     points.count = count;
     points.position.y = 1;
     points.position.z = 0.5;
-    this.references.items.get("jukebox")[0].add(points);
+    jukebox.add(points);
 
     // Interactive point
     this.game.interactivePoints.create(
-      this.references.items.get("jukeboxInteractivePoint")[0].position,
+      jukeboxInteractivePoint.position,
       "Change song",
       InteractivePoints.ALIGN_LEFT,
       InteractivePoints.STATE_CONCEALED,
@@ -535,6 +610,9 @@ export class BowlingArea extends Area {
   }
 
   update() {
+    if (!this.screen?.object?.physical?.body || !this.restartInteractivePoint)
+      return;
+
     let showRestartInteractivePoint = false;
 
     // Screen position
@@ -631,6 +709,11 @@ export class BowlingArea extends Area {
     }
 
     // Ball
+    if (!this.ball.body) {
+      this.ball.speed = 0;
+      return;
+    }
+
     const ballIsSleeping = this.ball.body.isSleeping();
     if (ballIsSleeping !== this.ball.isSleeping) {
       this.ball.isSleeping = ballIsSleeping;
