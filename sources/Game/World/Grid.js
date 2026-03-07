@@ -25,8 +25,8 @@ export class Grid {
     const lines = [
       // new MeshGridMaterialLine(0x705df2, 1, 0.03, 0.2),
       // new MeshGridMaterialLine(0xffffff, 10, 0.003, 1),
-      new MeshGridMaterialLine("#8d55ff", 10, 0.02, 0.2),
-      new MeshGridMaterialLine("#675369", 100, 0.002, 1),
+      // new MeshGridMaterialLine("#8d55ff", 10, 0.02, 0.2),
+      // new MeshGridMaterialLine("#675369", 100, 0.002, 1),
     ];
 
     const uvGridMaterial = new MeshGridMaterial({
@@ -117,7 +117,7 @@ export class Grid {
   }
 
   show() {
-    this.game.scene.add(this.mesh);
+    // this.game.scene.add(this.mesh);
   }
 
   destroy() {

@@ -63,7 +63,7 @@ export class Reveal {
       // Intro loader => Hide circle
       this.game.world.intro.circle.hide(() => {
         // Grid
-        this.game.world.grid.show();
+        // this.game.world.grid.show();
 
         // Reveal
         this.distance.value = 0;
@@ -89,7 +89,7 @@ export class Reveal {
 
         // Intro loader => Show label and sound button
         this.game.world.intro.setText();
-        this.game.world.intro.setSoundButton();
+        // this.game.world.intro.setSoundButton();
         this.game.ticker.wait(1, () => {
           this.game.world.intro.showLabel();
         });
