@@ -41,7 +41,7 @@ export class ProjectsArea extends Area {
     // Debug
     if (this.game.debug.active) {
       this.debugPanel = this.game.debug.panel.addFolder({
-        title: "🔨 Projects",
+        title: "🔨 Cars",
         expanded: false,
       });
     }
@@ -106,7 +106,7 @@ export class ProjectsArea extends Area {
   setInteractivePoint() {
     this.interactivePoint = this.game.interactivePoints.create(
       this.references.items.get("interactivePoint")[0].position,
-      "Projects",
+      "Cars Showroom",
       InteractivePoints.ALIGN_RIGHT,
       InteractivePoints.STATE_CONCEALED,
       () => {
