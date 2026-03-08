@@ -1,4 +1,25 @@
 
+
+:root
+    --theme-bg-0 #0b1214
+    --theme-bg-1 #111b1f
+    --theme-bg-2 #1a2a30
+    --theme-panel rgba(15, 24, 27, 0.88)
+    --theme-panel-strong rgba(11, 18, 20, 0.94)
+    --theme-panel-soft rgba(28, 42, 47, 0.78)
+    --theme-paper #efe3cf
+    --theme-paper-soft rgba(239, 227, 207, 0.76)
+    --theme-text #f7efde
+    --theme-text-muted rgba(247, 239, 222, 0.72)
+    --theme-line rgba(239, 227, 207, 0.26)
+    --theme-line-strong rgba(239, 227, 207, 0.52)
+    --theme-accent #cf9361
+    --theme-accent-strong #f0b87a
+    --theme-accent-secondary #4f8d85
+    --theme-success #b8cf83
+    --theme-danger #df7f5d
+    --theme-shadow rgba(0, 0, 0, 0.38)
+
 *
     box-sizing border-box
     margin 0
@@ -34,6 +55,7 @@ body
     -webkit-font-smoothing antialiased
     -moz-osx-font-smoothing grayscale
     overflow hidden
+    color var(--theme-text)
 
 .experience
     touch-action none
@@ -46,7 +68,7 @@ body
             cursor grabbing
 
 html
-    background radial-gradient(farthest-side at 0 0, #251f2b, #1d1721)
+    background radial-gradient(circle at top left, rgba(88, 129, 121, 0.32), transparent 32%), radial-gradient(circle at bottom right, rgba(207, 147, 97, 0.18), transparent 28%), linear-gradient(160deg, var(--theme-bg-2), var(--theme-bg-0) 60%, #060a0b)
     font-size 20px
     touch-action manipulation // Prevents double tap zoom
 
@@ -61,25 +83,31 @@ ol
     padding-left 25px
 
 .title
-    margin-bottom 0.25em
-    font-size 2.5rem
+    margin-bottom 0.35em
+    font-size 2.35rem
     font-family "Amatic SC", sans-serif
-    font-weight 700
+    font-weight 600
     font-style normal
+    line-height 0.92
+    letter-spacing 0.03em
+    text-transform uppercase
+    color var(--theme-paper)
 
 .text
     margin-bottom 0.75em
     font-size 1rem
+    color var(--theme-text-muted)
+    line-height 1.65
 
     a
-        color inherit
+        color var(--theme-accent-strong)
         text-decoration underline
 
 .text-small
     font-size 0.8rem
 
 .text-danger
-    color #ff87a2
+    color var(--theme-danger)
     
     .icon
         vertical-align sub
@@ -113,16 +141,25 @@ a.button
 
 .button
     vertical-align top
-    padding 0 16px
+    display inline-flex
+    align-items center
+    justify-content center
+    gap 10px
+    padding 0 20px
     height 58px
     line-height 58px
-    border-radius 8px
+    border-radius 999px
     white-space nowrap
-    color inherit
+    background linear-gradient(135deg, rgba(34, 52, 58, 0.92), rgba(12, 19, 22, 0.96))
+    box-shadow inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 12px 28px rgba(0, 0, 0, 0.2)
     text-decoration none
-    border 1px solid alpha(#ffffff, 0.8)
-    color alpha(#ffffff, 0.8)
+    border 1px solid var(--theme-line)
+    color var(--theme-paper-soft)
     cursor default
+    letter-spacing 0.08em
+    text-transform uppercase
+    font-size 0.72rem
+    font-weight 700
 
     @media only screen and (max-width 520px)
         padding 0 13px
@@ -144,14 +181,16 @@ a.button
             cursor help
 
     &.is-success
-        color #d5ff95
+        color var(--theme-success)
 
     &.is-danger
-        color #ff6a7c
+        color var(--theme-danger)
 
     html:not(.is-mode-touch) &:not(.is-disabled):hover
-        border 1px solid alpha(#ffffff, 1)
-        color alpha(#ffffff, 1)
+        border 1px solid var(--theme-line-strong)
+        color var(--theme-paper)
+        transform translateY(-1px)
+        box-shadow inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 36px rgba(0, 0, 0, 0.24)
 
     .icon
         position relative
@@ -195,32 +234,32 @@ a.button
                 padding-left 4px
 
     > *
-        border-top 1px solid #555555
-        border-bottom 1px solid #555555
+        border-top 1px solid var(--theme-line)
+        border-bottom 1px solid var(--theme-line)
 
     >:first-child
-        border-radius 8px 0 0 8px
-        border-left 1px solid #555555
+        border-radius 18px 0 0 18px
+        border-left 1px solid var(--theme-line)
 
     &.is-valide
         button
             cursor pointer
-            border-color #ffceca
-            color #ffceca
+            border-color var(--theme-accent-strong)
+            color var(--theme-accent-strong)
 
             &.has-icon
                 svg
                     *
-                        stroke #ffceca
+                        stroke var(--theme-accent-strong)
 
     .input-text
         padding 0 15px 0 5px
 
     .submit
-        border-radius 0 8px 8px 0
-        border 1px solid #555555
+        border-radius 0 18px 18px 0
+        border 1px solid var(--theme-line)
         cursor default
-        color #555555
+        color var(--theme-text-muted)
 
         &.has-text
             padding 0 20px
@@ -231,7 +270,7 @@ a.button
 
             svg
                 *
-                    stroke #555555
+                    stroke var(--theme-text-muted)
 
     .input-flag
         position relative
@@ -279,10 +318,11 @@ a.button
             left 8px
             width 350px
             height 240px
-            background radial-gradient(ellipse at top left, #251f2b, #1d1721)
-            border-radius 8px 8px 0 0
-            border 1px solid #767676
+            background linear-gradient(160deg, rgba(18, 29, 31, 0.98), rgba(10, 16, 18, 0.98))
+            border-radius 18px 18px 0 0
+            border 1px solid var(--theme-line)
             border-bottom none
+            box-shadow 0 24px 50px rgba(0, 0, 0, 0.3)
             overflow hidden
             white-space nowrap
             z-index 1
