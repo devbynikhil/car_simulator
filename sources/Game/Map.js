@@ -61,7 +61,7 @@ export class Map {
       {
         name: "Bowling<br /> Game",
         respawnName: "bowling",
-        offset: { x: -0.08, y: 0.03 },
+        offset: { x: -0.08, y: 0.01 },
       },
       {
         name: "Campaign",
@@ -101,7 +101,7 @@ export class Map {
       {
         name: "Portfolio",
         respawnName: "timeMachine",
-        offset: { x: 0, y: 0 },
+        offset: { x: -0.01, y: -0.01 },
       }
     ];
 
