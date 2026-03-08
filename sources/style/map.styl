@@ -36,7 +36,9 @@
         left 0
         width calc(100% + var(--hover-translate))
         height 100%
-        background radial-gradient(ellipse at top right, #C21515, #46123B)
+        background linear-gradient(145deg, var(--theme-accent), #7f5d43)
+        border-radius 18px 0 0 18px
+        box-shadow 0 14px 30px rgba(0, 0, 0, 0.22)
         transition transform 0.15s 0.15s
 
         html.input-filter-menu &,
@@ -54,7 +56,7 @@
             right 0
             bottom 3px
             left 3px
-            border 1px solid #ffffff
+            border 1px solid rgba(255, 245, 228, 0.59)
             border-right none
             opacity 0.35
             transition opacity 0.15s
@@ -81,7 +83,9 @@
     max-width 100vmin
     max-height 100vmin
     aspect-ratio 1 / 1
-    background radial-gradient(ellipse at top left, #251f2b, #1d1721)
+    background linear-gradient(160deg, rgba(18, 29, 31, 0.98), rgba(10, 16, 18, 0.98))
+    border-radius 28px
+    box-shadow 0 30px 70px rgba(0, 0, 0, 0.34)
     -webkit-user-select none
     -moz-user-select none
     user-select none
@@ -134,7 +138,8 @@
             right 0
             width 100%
             height calc(100% + var(--hover-translate))
-            background radial-gradient(ellipse at top right, #C21515, #46123B)
+            background linear-gradient(145deg, #9d6647, #593d2e)
+            border-radius 16px 16px 0 0
             transition transform 0.15s
 
             &::after
@@ -145,8 +150,9 @@
                 right 3px
                 bottom 0
                 left 3px
-                border 1px solid #ffffff
+                border 1px solid rgba(255, 245, 228, 0.5)
                 border-bottom none
+                border-radius 12px 12px 0 0
                 opacity 0.35
                 transition opacity 0.15s
 
@@ -173,7 +179,7 @@
                         justify-content center
                         align-items center
                         vertical-align bottom
-                        border 2px solid #ffffff
+                        border 2px solid var(--theme-paper)
                         // padding-top 2px
                         width 30px
                         height 30px
@@ -197,7 +203,8 @@
             right 3px
             bottom 3px
             left 3px
-            border 1px solid #ffffff
+            border 1px solid var(--theme-line)
+            border-radius 24px
             opacity 0.35
             pointer-events none
 
@@ -289,10 +296,10 @@
             left calc(50% - calc(var(--size) / 2))
             width var(--size)
             height var(--size)
-            background #ffffff
-            border 4px solid #251f2b
+            background var(--theme-accent-strong)
+            border 4px solid var(--theme-bg-1)
             transform rotate(45deg)
-            box-shadow 0 0 4px #251f2b77
+            box-shadow 0 0 10px rgba(0, 0, 0, 0.24)
 
             @media only screen and (max-width 520px)
                 --size 12px
@@ -311,13 +318,15 @@
                 bottom calc(100% - 12px)
 
             .name
-                background #000000
+                background rgba(10, 16, 18, 0.94)
                 text-transform uppercase
-                color #ffffff
-                padding 2px 6px
-                letter-spacing 1px
+                color var(--theme-paper)
+                padding 10px 15px
+                letter-spacing 0.12em
+                border 1px solid var(--theme-line)
+                border-radius 999px
                 text-align center
-                box-shadow 0 0 4px #00000077
+                box-shadow 0 10px 24px rgba(0, 0, 0, 0.24)
                 white-space nowrap
                 transform-origin 50% 80%
                 transform scale(0, 0)
