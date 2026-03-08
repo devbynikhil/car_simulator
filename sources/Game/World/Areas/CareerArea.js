@@ -25,7 +25,7 @@ export class CareerArea extends Area {
     // Debug
     if (this.game.debug.active) {
       this.debugPanel = this.game.debug.panel.addFolder({
-        title: "💼 Campaign",
+        title: "🏁 Race History",
         expanded: false,
       });
     }
@@ -67,111 +67,10 @@ export class CareerArea extends Area {
     });
   }
 
-  setLines() {
-    this.lines = {};
-    this.lines.items = [];
-    this.lines.activeElevation = 2.5;
-    this.lines.padding = 0.25;
-
-    const lineGroups = this.references.items.get("line");
-
-    const colors = {
-      blue: uniform(color("#5390ff")),
-      orange: uniform(color("#ff8039")),
-      purple: uniform(color("#b65fff")),
-      green: uniform(color("#a2ffab")),
-    };
-
-    for (const group of lineGroups) {
-      const line = {};
-      line.group = group;
-      line.size = parseFloat(line.group.userData.size);
-      line.hasEnd = line.group.userData.hasEnd;
-      line.color = line.group.userData.color;
-      line.texture =
-        this.game.resources[`${line.group.userData.texture}Texture`];
-
-      line.stone = line.group.children.find((child) =>
-        child.name.startsWith("stone"),
-      );
-      line.stone.position.y = 0;
-
-      line.origin = line.group.position.clone();
-
-      line.isIn = false;
-      line.isUp = false;
-      line.elevationTarget = 0;
-      line.offsetTarget = 0;
-      line.labelReveal = uniform(0);
-
-      {
-        line.textMesh = line.stone.children.find((child) =>
-          child.name.startsWith("careerText"),
-        );
-
-        const material = new THREE.MeshLambertNodeMaterial({
-          transparent: true,
-        });
-
-        const baseColor = colors[line.color];
-
-        material.outputNode = Fn(() => {
-          const baseUv = uv().toVar();
-
-          step(baseUv.x, line.labelReveal).lessThan(0.5).discard();
-
-          const textureColor = texture(line.texture, baseUv);
-
-          const alpha = step(0.1, max(textureColor.r, textureColor.g));
-
-          const emissiveColor = baseColor.div(luminance(baseColor)).mul(1.7);
-
-          const maskColor = color("#251f2b");
-          const finalColor = mix(maskColor, emissiveColor, textureColor.r);
-
-          return vec4(finalColor, alpha);
-        })();
-
-        // Mesh
-        line.textMesh.castShadow = false;
-        line.textMesh.receiveShadow = false;
-        line.textMesh.material = material;
-      }
-
-      this.lines.items.push(line);
-    }
-
-    this.lines.items.sort((a, b) => b.origin.z - a.origin.z);
-
-    let i = 0;
-    for (const line of this.lines.items) {
-      line.index = i++;
-    }
-
-    // Debug
-    if (this.game.debug.active) {
-      this.game.debug.addThreeColorBinding(
-        this.debugPanel,
-        colors.blue.value,
-        "blue",
-      );
-      this.game.debug.addThreeColorBinding(
-        this.debugPanel,
-        colors.orange.value,
-        "orange",
-      );
-      this.game.debug.addThreeColorBinding(
-        this.debugPanel,
-        colors.purple.value,
-        "purple",
-      );
-      this.game.debug.addThreeColorBinding(
-        this.debugPanel,
-        colors.green.value,
-        "green",
-      );
-    }
-  }
+setLines() {
+  this.lines = {};
+  this.lines.items = [];
+}
 
   setYears() {
     this.year = {};
@@ -179,7 +78,7 @@ export class CareerArea extends Area {
     this.year.originZ = this.year.group.position.z;
     this.year.size = 17;
     this.year.offsetTarget = 0;
-    this.year.start = 2008;
+    this.year.start = 1;
     this.year.current = this.year.start;
 
     //    Digit indexes
@@ -341,7 +240,7 @@ export class CareerArea extends Area {
 
   setAchievement() {
     this.events.on("boundingIn", () => {
-      this.game.achievements.setProgress("areas", "career");
+      this.game.achievements.setProgress("areas", "raceHistory");
     });
   }
 
