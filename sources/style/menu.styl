@@ -37,7 +37,9 @@
         left 0
         width calc(100% + var(--hover-translate))
         height 100%
-        background radial-gradient(ellipse at top right, #C21515, #46123B)
+        background linear-gradient(145deg, var(--theme-accent), #7f5d43)
+        border-radius 18px 0 0 18px
+        box-shadow 0 14px 30px rgba(0, 0, 0, 0.22)
         transition transform 0.15s 0.15s
 
         html.input-filter-menu &,
@@ -55,7 +57,7 @@
             right 0
             bottom 3px
             left 3px
-            border 1px solid #ffffff
+            border 1px solid rgba(255, 245, 228, 0.5)
             border-right none
             opacity 0.35
             transition opacity 0.15s
@@ -80,7 +82,7 @@
                     left 0
                     width 100%
                     height 2px
-                    background #ffffff
+                    background #fff8ea
 
                     &:nth-child(1)
                         top 0
