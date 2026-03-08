@@ -9,6 +9,11 @@ export class Map {
     this.modal = this.game.modals.items.get("map");
     this.element = this.modal.element.querySelector(".js-map-container");
 
+    if (!this.modal || !this.element) {
+      console.warn("Map: missing map modal markup");
+      return;
+    }
+
     this.setTrigger();
     this.setInputs();
 
@@ -39,41 +44,74 @@ export class Map {
     this.locations = {};
     this.locations.items = [
       {
-        name: "Achievements",
+        name: "Milestones",
         respawnName: "achievements",
         offset: { x: 0, y: -0.01 },
       },
-      { name: "Altar", respawnName: "altar", offset: { x: 0, y: -0.05 } },
       {
-        name: "Behind<br /> the scene",
+        name: "Death Well",
+        respawnName: "altar",
+        offset: { x: 0, y: -0.05 }
+      },
+      {
+        name: "Telemetry<br /> Vault",
         respawnName: "behindTheScene",
         offset: { x: 0.01, y: 0 },
       },
       {
-        name: "Bowling",
+        name: "Bowling<br /> Game",
         respawnName: "bowling",
         offset: { x: -0.08, y: 0.03 },
       },
-      { name: "Career", respawnName: "career", offset: { x: 0, y: -0.06 } },
       {
-        name: "Circuit",
-        respawnName: "circuit",
-        offset: { x: -0.08, y: -0.05 },
+        name: "Campaign",
+        respawnName: "career",
+        offset: { x: 0, y: -0.06 }
       },
-      { name: "Cookie", respawnName: "cookie", offset: { x: -0.02, y: -0.01 } },
-      { name: "Lab", respawnName: "lab", offset: { x: -0.03, y: 0 } },
-      { name: "Landing", respawnName: "landing", offset: { x: 0.02, y: 0 } },
-      { name: "Projects", respawnName: "projects", offset: { x: 0, y: -0.02 } },
-      { name: "Social", respawnName: "social", offset: { x: -0.01, y: -0.04 } },
       {
-        name: "Time Machine",
+        name: "Start Race",
+        respawnName: "circuit",
+        offset: { x: +0.01, y: -0.05 },
+      },
+      {
+        name: "Restaurant",
+        respawnName: "cookie",
+        offset: { x: -0.02, y: -0.01 }
+      },
+      {
+        name: "Garage",
+        respawnName: "lab", 
+        offset: { x: -0.03, y: 0 }
+      },
+      {
+        name: "Home",
+        respawnName: "landing", 
+        offset: { x: 0.02, y: 0 }
+      },
+      {
+        name: "More Cars",
+        respawnName: "projects",
+        offset: { x: 0, y: -0.02 }
+      },
+      {
+        name: "Social Hub",
+        respawnName: "social",
+        offset: { x: -0.01, y: -0.04 }
+      },
+      {
+        name: "Portfolio",
         respawnName: "timeMachine",
         offset: { x: 0, y: 0 },
-      },
+      }
     ];
 
     for (const item of this.locations.items) {
       const respawn = this.game.respawns.getByName(item.respawnName);
+      if (!respawn) {
+        console.warn(`Map: missing respawn '${item.respawnName}'`);
+        continue;
+      }
+
       const mapPosition = this.worldToMap(respawn.position);
 
       // HTML
@@ -106,12 +144,25 @@ export class Map {
     this.player = {};
     this.player.element = this.element.querySelector(".js-player");
     this.player.roundedPosition = { x: 0, y: 0 };
+
+    if (!this.player.element) {
+      this.player.element = document.createElement("div");
+      this.player.element.classList.add("js-player", "player");
+      this.element.append(this.player.element);
+    }
   }
 
   setTexture() {
     this.texture = {};
     this.texture.element = this.element.querySelector(".js-texture");
     this.texture.previousUrl = null;
+
+    if (!this.texture.element) {
+      this.texture.element = document.createElement("img");
+      this.texture.element.classList.add("js-texture", "texture");
+      this.texture.element.loading = "lazy";
+      this.element.prepend(this.texture.element);
+    }
 
     this.texture.element.addEventListener("load", () => {
       this.texture.element.classList.add("is-visible");
@@ -132,8 +183,13 @@ export class Map {
 
   setTrigger() {
     const element = this.game.domElement.querySelector(".js-map-trigger");
+    if (!element) {
+      console.warn("Map: missing trigger button");
+      return;
+    }
 
     element.addEventListener("click", (event) => {
+      event.preventDefault();
       this.game.modals.open("map");
     });
     element.addEventListener("keydown", (event) => {
@@ -177,6 +233,8 @@ export class Map {
 
   update() {
     if (!this.modal.isOpen) return;
+    if (!this.player?.element || !this.game.player || !this.game.physicalVehicle)
+      return;
 
     const playerRoundedX = Math.round(this.game.player.position.x);
     const playerRoundedY = Math.round(this.game.player.position.z);
