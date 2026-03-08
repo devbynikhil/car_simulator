@@ -96,8 +96,8 @@ export class InteractivePoints {
 
     // Uniforms
     this.playerPosition = uniform(vec2());
-    this.backColor = uniform(color("#251f2b"));
-    this.frontColor = uniform(color("#ffffff"));
+    this.backColor = uniform(color("#102024"));
+    this.frontColor = uniform(color("#f7edd8"));
 
     // Debug
     if (this.game.debug.active) {
