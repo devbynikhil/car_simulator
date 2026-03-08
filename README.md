@@ -1,5 +1,7 @@
 # NK Drive
 
+![image info](./static/social/share-image.png)
+
 **NK Drive** is an interactive **3D driving simulation experience** built with modern web technologies.  
 The project features a physics-driven vehicle system, dynamic environmental effects, and optimized rendering for smooth browser performance.
 
@@ -47,10 +49,22 @@ Start the development server:
 npm run dev
 ```
 
+If you want the online features, including the **Race Arena** leaderboard, start the local WebSocket server in a second terminal:
+
+```bash
+npm run server
+```
+
 Open in browser:
 
 ```
 http://localhost:5173
+```
+
+The local arena server listens on:
+
+```text
+ws://localhost:8787
 ```
 
 Build for production:
@@ -60,6 +74,39 @@ npm run build
 ```
 
 The production build will be generated inside the `dist/` directory.
+
+---
+
+# Race Arena Server Setup
+
+This repository contains the **client** and now also includes a minimal local WebSocket backend at `scripts/server.js`.
+
+1. Install dependencies with `npm install --force`.
+2. Copy `.env.example` to `.env`.
+3. Keep `VITE_SERVER_URL=ws://localhost:8787` for local development.
+4. Start the backend with `npm run server`.
+5. Start the client with `npm run dev`.
+
+The server uses **MessagePack over WebSocket** because the client decodes binary payloads with `msgpack-lite`.
+
+The `init` payload must include these keys for the race arena and other online systems to work:
+
+- `circuitResetTime`: Unix timestamp in milliseconds for the last daily leaderboard reset
+- `circuitLeaderboard`: array of `[tag, countryCode, durationMs]`
+- `cookiesCount`: shared cookie counter
+- `whispers`: whisper entries used by the world flames
+- `cataclysmCount`, `cataclysmProgress`, `cataclysmRunning`: shared altar and tornado state
+
+For the **Race Arena** specifically, the client sends:
+
+- `circuitInsert` with `tag`, `countryCode`, `duration`, and `checkpointTimings`
+
+The server answers with:
+
+- `init` on first connection
+- `circuitUpdate` after a new race time is inserted
+
+If you deploy the client over HTTPS, change `VITE_SERVER_URL` to a `wss://` endpoint or the browser will block the WebSocket connection.
 
 ---
 
