@@ -133,17 +133,21 @@ export class Audio {
     this.playlist = {};
     this.playlist.songs = [
       {
-        path: "sounds/musics/Sudo.mp3",
-        name: "Sudo.mp3",
+        path: "sounds/musics/Varam.mp3",
+        name: "Varam.mp3",
       },
       {
-        path: "sounds/musics/Boy.mp3",
-        name: "Boy.mp3",
+        path: "sounds/musics/Weasel.mp3",
+        name: "Weasel.mp3",
       },
       {
-        path: "sounds/musics/Baguira.mp3",
-        name: "Baguira.mp3",
+        path: "sounds/musics/Idoberg.mp3",
+        name: "Idoberg.mp3",
       },
+      {
+        path: "sounds/musics/Eliveta.mp3",
+        name: "Eliveta.mp3",
+      }
     ];
     this.playlist.index =
       Math.floor(Date.now() / 1000 / 60 / 3) % this.playlist.songs.length; // Different music every X minutes
