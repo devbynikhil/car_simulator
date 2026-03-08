@@ -345,7 +345,7 @@ export class AchievementsArea extends Area {
 
     this.interactivePoint = this.game.interactivePoints.create(
       interactivePoint.position,
-      "Achievements",
+      "Milestone",
       InteractivePoints.ALIGN_RIGHT,
       InteractivePoints.STATE_CONCEALED,
       () => {
