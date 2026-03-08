@@ -171,7 +171,7 @@ export class SocialArea extends Area {
   setOnlyFans() {
     const interactiveArea = this.game.interactivePoints.create(
       this.references.items.get("onlyFans")[0].position,
-      "OnlyFans",
+      "Surprise",
       InteractivePoints.ALIGN_RIGHT,
       InteractivePoints.STATE_CONCEALED,
       () => {

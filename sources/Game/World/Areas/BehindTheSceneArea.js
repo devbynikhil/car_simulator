@@ -30,7 +30,7 @@ export class BehindTheSceneArea extends Area {
     // Debug
     if (this.game.debug.active) {
       this.debugPanel = this.game.debug.panel.addFolder({
-        title: "🔳 Behind the scene",
+        title: "🔳 Telementary Vault",
         expanded: false,
       });
     }
@@ -150,7 +150,7 @@ export class BehindTheSceneArea extends Area {
   setInteractivePoint() {
     this.interactivePoint = this.game.interactivePoints.create(
       this.references.items.get("interactivePoint")[0].position,
-      "Behind the scene",
+      "Telementary Vault",
       InteractivePoints.ALIGN_RIGHT,
       InteractivePoints.STATE_CONCEALED,
       () => {

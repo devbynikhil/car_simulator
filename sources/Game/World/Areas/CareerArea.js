@@ -25,7 +25,7 @@ export class CareerArea extends Area {
     // Debug
     if (this.game.debug.active) {
       this.debugPanel = this.game.debug.panel.addFolder({
-        title: "💼 Career",
+        title: "💼 Campaign",
         expanded: false,
       });
     }
