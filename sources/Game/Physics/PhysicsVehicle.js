@@ -17,6 +17,16 @@ export class PhysicsVehicle {
     this.brakeAmplitude = 35;
     this.idleBrake = 0.06;
     this.reverseBrake = 0.4;
+    this.idleStabilizer = {
+      duration: 0.75,
+      time: 0,
+      inputThreshold: 0.01,
+      steeringThreshold: 0.01,
+      linearSpeedThreshold: 0.15,
+      verticalSpeedThreshold: 0.08,
+      angularSpeedThreshold: 0.08,
+      requiredContactCount: 4,
+    };
 
     this.sideward = new THREE.Vector3(0, 0, 1);
     this.upward = new THREE.Vector3(0, 1, 0);
@@ -752,11 +762,64 @@ export class PhysicsVehicle {
     this.wheels.inContactCount = inContactCount;
     this.wheels.justTouchedCount = justTouchedCount;
 
+    this.applyIdleStabilizer();
+
     this.stop.test();
     this.upsideDown.test();
     this.stuck.test();
     // this.backWheel.test()
     this.flip.test();
+  }
+
+  applyIdleStabilizer() {
+    const linearVelocity = this.chassis.physical.body.linvel();
+    const angularVelocity = this.chassis.physical.body.angvel();
+    const horizontalSpeed = Math.hypot(linearVelocity.x, linearVelocity.z);
+    const angularSpeed = Math.hypot(
+      angularVelocity.x,
+      angularVelocity.y,
+      angularVelocity.z,
+    );
+
+    const noThrottleInput =
+      Math.abs(this.game.player.accelerating) <=
+        this.idleStabilizer.inputThreshold &&
+      this.game.player.braking <= this.idleStabilizer.inputThreshold &&
+      this.game.player.boosting <= this.idleStabilizer.inputThreshold;
+    const noSteeringInput =
+      Math.abs(this.game.player.steering) <=
+      this.idleStabilizer.steeringThreshold;
+    const settledEnough =
+      horizontalSpeed <= this.idleStabilizer.linearSpeedThreshold &&
+      Math.abs(linearVelocity.y) <= this.idleStabilizer.verticalSpeedThreshold &&
+      angularSpeed <= this.idleStabilizer.angularSpeedThreshold;
+    const fullyGrounded =
+      this.wheels.inContactCount >= this.idleStabilizer.requiredContactCount;
+
+    if (
+      noThrottleInput &&
+      noSteeringInput &&
+      settledEnough &&
+      fullyGrounded &&
+      !this.upsideDown.active
+    ) {
+      this.idleStabilizer.time += this.game.ticker.delta;
+    } else {
+      this.idleStabilizer.time = 0;
+      return;
+    }
+
+    if (this.idleStabilizer.time < this.idleStabilizer.duration) return;
+
+    this.chassis.physical.body.setLinvel({ x: 0, y: 0, z: 0 }, false);
+    this.chassis.physical.body.setAngvel({ x: 0, y: 0, z: 0 }, false);
+
+    this.velocity.set(0, 0, 0);
+    this.direction.copy(this.forward);
+    this.speed = 0;
+    this.xzSpeed = 0;
+    this.forwardRatio = 0;
+    this.forwardSpeed = 0;
   }
 
   activate() {
